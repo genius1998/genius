@@ -1,21 +1,108 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
 
-.coinUp{
-    text-align: center;
-    color: white;
-    font-size: 50px;
-    cursor : pointer;
-    font-weight:bolder;
-
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+    background-color: #f4f4f9;
 }
 
-.userInfo table{
-    margin-top: 80px;
-    margin-left: 50px;
-    width: 400px;
+.main-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
 }
-.userInfo th,td{
-    font-size: 40px;
+
+.header {
     text-align: center;
-    border: 3px solid rgb(42, 152, 174);
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: #333;
+    color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.crawl-button {
+    background-color: #28a745;
     color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-bottom: 20px;
+    transition: background-color 0.3s ease;
+}
+
+.crawl-button:hover {
+    background-color: #218838;
+}
+
+.filter-section {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.dropdown {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+
+.car-table-container {
+    overflow-x: auto;
+    margin-top: 20px;
+}
+
+.car-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 16px;
+    text-align: left;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.car-table th, .car-table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+}
+
+.car-table th {
+    background-color: #333;
+    color: #fff;
+    font-weight: 700;
+}
+
+.car-table td {
+    color: #333;
+    text-align: center;
+}
+
+.car-image {
+    width: 100px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+.car-name {
+    font-size: 18px;
+    color: #333;
+}
+
+.car-price {
+    font-size: 18px;
+    color: #e91e63;
+}
+
+.car-mileage, .car-fuel, .car-location {
+    font-size: 14px;
+    color: #777;
 }

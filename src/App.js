@@ -4,15 +4,11 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { useSelector, useDispatch } from 'react-redux';
 
 import Login from './components/Login/Login';
-import Head from './fix/Head';
-import Menu from './fix/Menu';
 import Main from './components/Main/Main';
-import Game1 from './components/Game/Game1';
-import Game2 from './components/Game/Game2';
-import Game3 from './components/Game/Game3';
 
+// Menu 컴포넌트 삭제에 따른 경로 수정
+import Head from './fix/Head';
 
-import Ranking from './components/Ranking/Ranking';
 import { logout } from './redux/userSlice';
 
 function App() {
@@ -27,7 +23,7 @@ function App() {
     <Router>
       <div className="App">
         <Head />
-        {isLoggedIn && <Menu handleLogout={handleLogout} />}
+        {/* Menu 컴포넌트가 삭제되었으므로 해당 부분도 삭제 */}
         <Routes>
           <Route
             path="/"
@@ -49,47 +45,7 @@ function App() {
               )
             }
           />
-          <Route
-            path="/ranking"
-            element={
-              isLoggedIn ? (
-                <Ranking />
-              ) : (
-                <Navigate to="/" />
-              )
-            }
-          />
-          <Route
-            path="/1"
-            element={
-              isLoggedIn ? (
-                <Game1 />
-              ) : (
-                <Navigate to="/" />
-              )
-            }
-          />
-          <Route
-            path="/2"
-            element={
-              isLoggedIn ? (
-                <Game2 />
-              ) : (
-                <Navigate to="/" />
-              )
-            }
-          />
-          <Route
-            path="/3"
-            element={
-              isLoggedIn ? (
-                <Game3 />
-              ) : (
-                <Navigate to="/" />
-              )
-            }
-          />
-          
+
           <Route
             path="*"
             element={<Navigate to={isLoggedIn ? "/main" : "/"} />}

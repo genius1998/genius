@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { login } from '../../redux/userSlice';
 
-export default ({}) => {
+export default () => {
     const dispatch = useDispatch();
     const [isSignUp, setIsSignUp] = useState(false);
     const [username, setUsername] = useState('');
@@ -37,20 +37,20 @@ export default ({}) => {
     };
 
     const activeEnterSignIn = (e) => {
-        if ((isSignUp == false) && e.key === "Enter") {
+        if (!isSignUp && e.key === "Enter") {
             handleLogin();
         }
     };
 
     const activeEnterSignUp = (e) => {
-        if ((isSignUp == true) && e.key === "Enter") {
+        if (isSignUp && e.key === "Enter") {
             handleRegister();
         }
     };
 
     const handleRegister = () => {
         if (isSignUp && password !== repeatPassword) {
-            alert("Password and repeat password do not match");
+            alert("Passwords do not match");
             return;
         }
         axios.post('http://localhost:3001/register', {
@@ -60,19 +60,7 @@ export default ({}) => {
             alert(response.data);
             changeSignIn();
         }).catch(error => {
-            if (error.response && error.response.status === 400) {
-                alert('이미 사용 중인 이름입니다');
-                setUsername('');
-                setPassword('');
-                setRepeatPassword('');
-            } else if (error.response && error.response.status === 401) {
-                alert('비밀번호를 4이상으로 설정해주세요');
-                setPassword('');
-                setRepeatPassword('');
-            }
-            else {
-                console.error('There was an error!', error);
-            }
+            console.error('Registration error:', error);
         });
     };
 
@@ -90,86 +78,65 @@ export default ({}) => {
             setPassword('');
           }
         }).catch(error => {
-          console.error('There was an error!', error);
+          console.error('Login error:', error);
           alert('Invalid username or password');
           setUsername(''); 
           setPassword('');
         });
       };
     
-    
-
     return (
-        <div className="login">
-            <h1>{isSignUp ? "SIGN UP" : "SIGN IN"}</h1>
-            <ul className="links">
-                <li>
-                    <a href="#" id="signin" onClick={changeSignIn}>SIGN IN</a>
-                </li>
-                <li>
-                    <a href="#" id="signup" onClick={changeSignUp}>SIGN UP</a>
-                </li>
-            </ul>
-            <form>
-                <div className="first-input input__block first-input__block">
-                    <input
-                        type="text"
-                        placeholder="Name"
-                        className="input"
-                        id="username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                    />
-                </div>
-
-                <div className="input__block" style={{ position: 'relative' }}>
-                    <input
-                        type={passwordVisible ? "text" : "password"}
-                        placeholder="Password"
-                        className="input"
-                        id="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        onKeyDown={(e) => activeEnterSignIn(e)}
-                    />
-                    <span
-                        onClick={togglePasswordVisibility}
-                        style={{ position: 'absolute', right: 50, top: '50%', transform: 'translateY(-50%)', cursor: 'pointer' }}
-                    >
-                        {passwordVisible ? (
-                            <Svg1 />
-                        ) : (
-                            <Svg2 />)}
-                    </span>
-                </div>
-
-                {isSignUp && (
-                    <div className="input__block">
+        <div className="login-container">
+            <div className="login-box">
+                <h1 className="login-title">{isSignUp ? "Create Account" : "Welcome Back!"}</h1>
+                <ul className="toggle-links">
+                    <li>
+                        <a href="#" onClick={changeSignIn} className={!isSignUp ? 'active' : ''}>Sign In</a>
+                    </li>
+                    <li>
+                        <a href="#" onClick={changeSignUp} className={isSignUp ? 'active' : ''}>Sign Up</a>
+                    </li>
+                </ul>
+                <form>
+                    <div className="input-group">
+                        <input
+                            type="text"
+                            placeholder="Username"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                        />
+                    </div>
+                    <div className="input-group">
                         <input
                             type={passwordVisible ? "text" : "password"}
-                            placeholder="Repeat password"
-                            className="input repeat__password"
-                            id="repeat__password"
-                            value={repeatPassword}
-                            onChange={(e) => setRepeatPassword(e.target.value)}
-                            onKeyDown={(e) => activeEnterSignUp(e)}
+                            placeholder="Password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            onKeyDown={(e) => activeEnterSignIn(e)}
                         />
-                        <span
-                            onClick={togglePasswordVisibility}
-                            style={{ position: 'absolute', right: 50, top: '50%', transform: 'translateY(-50%)', cursor: 'pointer' }}
-                        >
-                            {passwordVisible ? (
-                                <Svg1 />
-                            ) : (
-                                <Svg2 />)}
+                        <span onClick={togglePasswordVisibility} className="toggle-password">
+                            {passwordVisible ? <Svg1 /> : <Svg2 />}
                         </span>
                     </div>
-                )}
-
-                <button type="button" className="signin__btn" onClick={isSignUp ? handleRegister : handleLogin}>
-                    {isSignUp ? "Sign up" : "Sign in"}
-                </button>
-            </form>
+                    {isSignUp && (
+                        <div className="input-group">
+                            <input
+                                type={passwordVisible ? "text" : "password"}
+                                placeholder="Repeat Password"
+                                value={repeatPassword}
+                                onChange={(e) => setRepeatPassword(e.target.value)}
+                                onKeyDown={(e) => activeEnterSignUp(e)}
+                            />
+                            <span onClick={togglePasswordVisibility} className="toggle-password">
+                                {passwordVisible ? <Svg1 /> : <Svg2 />}
+                            </span>
+                        </div>
+                    )}
+                    <button type="button" className="submit-btn" onClick={isSignUp ? handleRegister : handleLogin}>
+                        {isSignUp ? "Sign Up" : "Sign In"}
+                    </button>
+                </form>
+            </div>
         </div>
     );
 }

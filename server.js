@@ -3,6 +3,7 @@ const mysql = require('mysql');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs');
+const { exec, spawn } = require('child_process');
 
 const app = express();
 app.use(cors());
@@ -11,18 +12,18 @@ app.use(bodyParser.json());
 const db = mysql.createConnection({
   host: '127.0.0.1',
   user: 'root',
-  password: 'MyNewPass',  
+  password: 'MyNewPass',
   database: 'miniUser'
 });
 
 db.connect(err => {
   if (err) {
-      throw err;
+    throw err;
   }
   console.log('MySQL Connected...');
 });
 
-
+// 회원가입 엔드포인트
 app.post('/register', (req, res) => {
   const { username, password } = req.body;
 
@@ -31,7 +32,7 @@ app.post('/register', (req, res) => {
       return res.status(500).send('Server error');
     }
 
-    const user = { username, password: hash, coin: 0};
+    const user = { username, password: hash, coin: 0 };
 
     db.query('INSERT INTO users SET ?', user, (err, result) => {
       if (err) {
@@ -42,6 +43,7 @@ app.post('/register', (req, res) => {
   });
 });
 
+// 로그인 엔드포인트
 app.post('/login', (req, res) => {
   const { username, password } = req.body;
 
@@ -61,11 +63,11 @@ app.post('/login', (req, res) => {
       }
 
       if (isMatch) {
-        res.status(200).send({ 
-          message: 'Login successful', 
+        res.status(200).send({
+          message: 'Login successful',
           userData: {
             username: results[0].username,
-            coin : results[0].coin
+            coin: results[0].coin
           }
         });
       } else {
@@ -75,55 +77,63 @@ app.post('/login', (req, res) => {
     });
   });
 });
-app.get('/user/:username', (req, res) => {
-  const { username } = req.params;
 
-  const query = `
-      SELECT username, coin, 
-             FIND_IN_SET(coin, (SELECT GROUP_CONCAT(coin ORDER BY coin DESC) FROM users)) AS rank 
-      FROM users WHERE username = ?`;
 
-  db.query(query, [username], (err, results) => {
-      if (err) {
-          console.error('Database query error:', err);
-          return res.status(500).send('Database error');
-      }
-      if (results.length > 0) {
-          res.status(200).send(results[0]);
-      } else {
-          res.status(404).send('User not found');
-      }
+
+// Python 크롤링 스크립트를 실행하는 엔드포인트
+app.post('/scrape', (req, res) => {
+  const { manufacturer, model, subModel } = req.body;
+
+  const command = `python encar.py "${manufacturer}" "${model}" "${subModel}"`; // Python 스크립트에 인자 전달
+
+  exec(command, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`Error executing script: ${error.message}`);
+      return res.status(500).send('Error during scraping');
+    }
+
+    if (stderr) {
+      console.error(`Script stderr: ${stderr}`);
+      return res.status(500).send('Error during scraping');
+    }
+
+    console.log(`Script output: ${stdout}`);
+    res.send('Scraping completed successfully');
   });
 });
 
-app.post('/update-coin', (req, res) => {
-  const { username, coin } = req.body;
+// 엑셀 데이터를 읽어오는 엔드포인트
+app.get('/cars', (req, res) => {
+  const pythonProcess = spawn('python', ['read_excel.py']); // 엑셀 파일을 읽는 Python 스크립트 실행
 
-  db.query(
-    'UPDATE users SET coin = ? WHERE username = ?', 
-    [coin, username], 
-    (err, result) => {
-      if (err) {
-        console.error('Database update error:', err);
-        return res.status(500).send('Database error');
+  let data = ''; // 데이터를 저장할 변수 초기화
+
+  pythonProcess.stdout.on('data', (chunk) => {
+    data += chunk; // 데이터를 청크로 수신
+  });
+
+  pythonProcess.stderr.on('data', (data) => {
+    console.error(`Error executing script: ${data}`);
+    res.status(500).send('Error during data fetching');
+  });
+
+  pythonProcess.on('close', (code) => {
+    if (code === 0) { // 프로세스가 성공적으로 종료되었을 때
+      try {
+        const carData = JSON.parse(data); // JSON 파싱 시도
+        res.json(carData); // JSON 데이터를 클라이언트에 전송
+      } catch (error) {
+        console.error('JSON parsing error:', error.message);
+        res.status(500).send('Error parsing JSON data');
       }
-      res.status(200).send('Coin value updated successfully');
+    } else {
+      console.error(`Python script exited with code ${code}`);
+      res.status(500).send('Python script failed');
     }
-  );
-});
-
-
-app.get('/ranking', (req, res) => {
-
-  db.query('SELECT username, coin FROM users ORDER BY coin DESC', (err, results) => {
-    if (err) {
-      return res.status(500).send('Database error');
-    }
-
-    res.status(200).send(results);
   });
 });
 
+// 서버 시작
 app.listen(3001, () => {
   console.log('Server started on port 3001');
 });
