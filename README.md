@@ -1,1 +1,1 @@
-Redux 사용
+Init
