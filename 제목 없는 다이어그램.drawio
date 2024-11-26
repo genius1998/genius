@@ -109,6 +109,9 @@
         <mxCell id="3R9wxzpKTM0gg27qBDX4-8" value="&lt;div&gt;회원정보 수정 화면&lt;/div&gt;&lt;div&gt;localstorage에서 현재 id를 가져와, 현재 아이디에 대한 비밀번호 정보를 가져옴. 현재 아이디와 비밀번호를 기준으로 수정가능.&lt;br&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="800" y="1030" width="270" height="120" as="geometry" />
         </mxCell>
+        <mxCell id="3R9wxzpKTM0gg27qBDX4-9" value="&lt;div&gt;회원정보 탈퇴&lt;/div&gt;&lt;div&gt;회원정보 탈퇴 버튼을 누르면 경고 알림이 생김.&lt;/div&gt;&lt;div&gt;확인을 누르면 현재 id에 대한 정보를 삭제.&lt;br&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="800" y="1360" width="270" height="130" as="geometry" />
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
